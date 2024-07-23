@@ -8,7 +8,6 @@ This guide provides steps to set up a Kafka and Flink cluster on a local Kuberne
 - Kubernetes (Minikube or Docker Desktop with Kubernetes enabled)
 - kubectl
 - Helm
-- Artifactory Credentials 
 - localDeployment.sh
 - support.sh
 - flink-cluster.yaml
