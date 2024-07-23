@@ -1,0 +1,38 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: df-streaming-flinkcluster
+spec:
+  image: flink:1.18.1-scala_2.12-java11
+  flinkVersion: v1_18
+  flinkConfiguration:
+    taskmanager.numberOfTaskSlots: "2"
+    kubernetes.jobmanager.cpu.amount: "1"
+    state.savepoints.dir: file:///tmp/flink-data/savepoints
+    state.checkpoints.dir: file:///tmp/flink-data/checkpoints
+    fs.s3a.connection.maximum: "40"
+    fs.s3a.threads.max: "40"
+    kafka.brokers: "kafka-controller-0.kafka-controller-headless.default.svc.cluster.local:9092,kafka-controller-1.kafka-controller-headless.default.svc.cluster.local:9092,kafka-controller-2.kafka-controller-headless.default.svc.cluster.local:9092"
+  logConfiguration:
+    log4j-console.properties: |
+      rootLogger.level = DEBUG
+  serviceAccount: flink
+  podTemplate:
+    spec:
+      containers:
+        - name: flink-main-container
+          env:
+            - name: KINESIS_STREAM_ARN
+              value: ""
+          envFrom:
+            - configMapRef:
+                name: msk-configuration
+          
+  jobManager:
+    resource:
+      memory: "2048m"
+      cpu: 1
+  taskManager:
+    resource:
+      memory: "4096m"
+      cpu: 2
